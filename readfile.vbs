@@ -41,6 +41,8 @@ Set f = fso.OpenTextFile(filename, ForReading,False,TriStateTrue)
 count=0
 strTranslated=""
 sBoolLang = False
+
+  strResult =""
 Do Until f.AtEndOfStream
   count=count+1
   strLine = f.ReadLine
@@ -55,7 +57,6 @@ Do Until f.AtEndOfStream
   strTranOutro2 = "&nbsp;&nbsp;                          </font></TD>        </TR>"
 
 
-
   If sBoolLang = True Then
     strTranslated = strTranslated & strLine
     If instr(strLine , "</TR>") Then
@@ -63,9 +64,12 @@ Do Until f.AtEndOfStream
     strTranslated = Replace (strTranslated, strTranIntro2 , "")
     strTranslated = Replace (strTranslated, strTranOutro , "")
     strTranslated = Replace (strTranslated, strTranOutro2 , "")
-      Wscript.echo count & " : " & LTrim(strTranslated)
+      Wscript.echo LTrim(strTranslated)
       sBoolLang = False
+      strResult = strResult & "," & LTrim(strTranslated)
       strTranslated=""
+
+
     End If
   End If
 
@@ -76,9 +80,12 @@ Do Until f.AtEndOfStream
   strLine = Replace (strLine, strLangIntro2 , "")
   strLine = Replace (strLine, strLangOutro , "")
   strLine = Replace (strLine, strLangOutro2 , "")
-    WScript.Echo count & " : " & LTrim(strLine)
+    'WScript.Echo count & " : " & LTrim(strLine)
     sBoolLang = True
   end if
 Loop
+strResult = Replace (strResult, "&nbsp;" , "")
+strResult = Replace (strResult, "  " , "")
+Wscript.echo strResult
 
 f.Close

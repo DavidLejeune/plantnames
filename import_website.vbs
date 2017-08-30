@@ -1,6 +1,6 @@
 
 
-
+sCount= 0
  outFile="list_of_plants.txt"
  outPlant="plant.txt"
  Set objFSO=CreateObject("Scripting.FileSystemObject")
@@ -36,9 +36,11 @@ redim cellContent2( table.rows.length - 1 )
 dim table2
 
 
-'this will loop all the rows of the table and pull all the column 0 and column 1
-'for i = 0 to table.rows.length - 1
-for i = 0 to 10
+ objFile.Write "ID,Armenian,Catalan,Czech,Danish,Dutch,English (folk),English (UK),Esperanto,Estonian,Faroese,Finnish,French,German,Hungarian,Icelandic,Irish (Gaelic),Italian,Latin (Linnaean),Latvian,Lithuanian,Maltese,Manx (Gaelic),Norwegian,Polish,Portuguese,Romanian,Russian,Scots (Gaelic),Slovak,Slovene,Spanish,Swedish,Welsh (Cymraeg)" & vbCrlf
+
+ 'this will loop all the rows of the table and pull all the column 0 and column 1
+ for i = 0 to table.rows.length - 1
+'for i = 0 to 10
  cellContent0(i) = table.rows(i).cells(0).innerhtml
  strID = Replace(cellContent0(i),"<a href=" & """" & "allnames.asp?ID=","")
  strID = Replace(strID,"""" & ">All names</a>","")
@@ -49,8 +51,7 @@ for i = 0 to 10
 
   if isNumeric(strID) Then
 
-   objFile.Write strID & "," & cellContent1(i) & "," & cellContent2(i) & vbCrLf
-
+sCount = sCount +1
    outPlant="plant.txt"
    'wscript.echo "strID : " & strID
     With (CreateObject("Scripting.FileSystemObject"))
@@ -78,7 +79,116 @@ for i = 0 to 10
     objPlant.Close
     wscript.sleep 1
 
-   wscript.echo strID & "," & cellContent1(i) & "," & cellContent2(i) ''& "," & PagecellContent0(i) & "," & PagecellContent1(i) & "," & PagecellContent2(i)
+
+
+
+    outPlant="D:\DaLe\David\Projects\PlantNames\plant.txt"
+    filename = "plant.txt"
+
+
+    'Const ForReading = 1
+
+    'Const TriStateTrue = -1
+
+    ' Set objFSO = CreateObject("Scripting.FileSystemObject")
+    '
+    '
+    ' Set objFile = objFSO.OpenTextFile(filename, ForReading,False,TriStateTrue)
+    '
+    ' Do Until objFile.AtEndOfStream
+    '   WScript.Echo objFile.ReadLine
+    ' Loop
+    ' 'strText = objFile.ReadAll
+    '
+    ' objFile.Close
+
+
+    'Wscript.Echo strText
+
+
+
+
+
+
+    ' Set f = fso.OpenTextFile(filename)
+    '
+    ' Do Until f.AtEndOfStream
+    '   WScript.Echo f.ReadLine
+    ' Loop
+    '
+    ' f.Close
+
+
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set f = fso.OpenTextFile(filename, 1,False,-1)
+
+    count=0
+    strTranslated=""
+    sBoolLang = False
+
+      strResult =""
+    Do Until f.AtEndOfStream
+      count=count+1
+      strLine = f.ReadLine
+      strLangIntro = "<TD width=" & """"  & "200" & """" & "><font color=" & """" & "#800000" & """" & "><b>"
+      strLangIntro2 = "<TD width=" & """" & "200" & """" & " valign=" & """" & "top" & """" & " align=" & """" & "left" & """" & "><font color=" & """" & "#800000" &  """" & "><b>"
+      strLangOutro = " : </b></font></TD>"
+      strLangOutro2 = " :</b> </font></TD>"
+
+      strTranIntro = "<TD><font color=" & """" & "#000000" & """" & ">"
+      strTranIntro2 = "<TD class=multil>"
+      strTranOutro = " </font></TD>        </TR>"
+      strTranOutro2 = "&nbsp;&nbsp;                          </font></TD>        </TR>"
+
+
+      If sBoolLang = True Then
+        strTranslated = strTranslated & strLine
+        If instr(strLine , "</TR>") Then
+        strTranslated = Replace (strTranslated, strTranIntro , "")
+        strTranslated = Replace (strTranslated, strTranIntro2 , "")
+        strTranslated = Replace (strTranslated, strTranOutro , "")
+        strTranslated = Replace (strTranslated, strTranOutro2 , "")
+          'Wscript.echo LTrim(strTranslated)
+          sBoolLang = False
+          strResult = strResult & "," & LTrim(strTranslated)
+          strTranslated=""
+
+
+        End If
+      End If
+
+
+
+      if InStr(strLine, strLangIntro) > 0 or InStr(strLine, strLangIntro2) > 0 Then
+      strLine = Replace (strLine, strLangIntro , "")
+      strLine = Replace (strLine, strLangIntro2 , "")
+      strLine = Replace (strLine, strLangOutro , "")
+      strLine = Replace (strLine, strLangOutro2 , "")
+        'WScript.Echo count & " : " & LTrim(strLine)
+        sBoolLang = True
+      end if
+    Loop
+    strResult = Replace (strResult, "&nbsp;" , "")
+    strResult = Replace (strResult, "  " , "")
+    'Wscript.echo "LANGUAGE STRING"
+    'Wscript.echo strResult
+
+    f.Close
+
+
+
+
+
+       objFile.Write strID & "," & strResult & vbCrlf
+
+       Wscript.echo "----------------------------------------------------"
+       Wscript.echo "Plant nr : " & sCount
+       Wscript.echo "Plant online id : " & strID
+       Wscript.echo "Plant Esperanto name : " & cellContent1(i)
+       Wscript.echo "Plant Latin name : " & cellContent2(i)
+       Wscript.echo "Length string other plant names : " & Len(strResult)
+
+  '' wscript.echo strID & "," & cellContent1(i) & "," & cellContent2(i) ''& "," & PagecellContent0(i) & "," & PagecellContent1(i) & "," & PagecellContent2(i)
   End If
 
 next
